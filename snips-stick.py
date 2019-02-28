@@ -4,7 +4,43 @@ import argparse
 from datetime import datetime
 from base import MiBand2
 from constants import ALERT_TYPES
+import pytoml
+import json
+import random
+import os
+import paho.mqtt.publish as publish
 
+SNIPS_CONFIG_PATH = '/etc/snips.toml'
+siteId = 'default'
+mqttServer = '127.0.0.1'
+mqttPort = 1883
+
+
+def loadConfigs():
+    global mqttServer, mqttPort, siteId, hotwordId
+
+    if os.path.isfile(SNIPS_CONFIG_PATH):
+        with open(SNIPS_CONFIG_PATH) as confFile:
+            configs = pytoml.load(confFile)
+            if 'mqtt' in configs['snips-common']:
+                if ':' in configs['snips-common']['mqtt']:
+                    mqttServer = configs['snips-common']['mqtt'].split(':')[0]
+                    mqttPort = int(configs['snips-common']['mqtt'].split(':')[1])
+                elif '@' in configs['snips-common']['mqtt']:
+                    mqttServer = configs['snips-common']['mqtt'].split('@')[0]
+                    mqttPort = int(configs['snips-common']['mqtt'].split('@')[1])
+            if 'bind' in configs['snips-audio-server']:
+                if ':' in configs['snips-audio-server']['bind']:
+                    siteId = configs['snips-audio-server']['bind'].split(':')[0]
+                elif '@' in configs['snips-audio-server']['bind']:
+                    siteId = configs['snips-audio-server']['bind'].split('@')[0]
+            if 'hotword_id' in configs['snips-hotword']:
+                hotwordId = configs['snips-hotword']['hotword_id']
+    else:
+        print('Snips configs not found')
+
+
+loadConfigs()
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--standard',  action='store_true',help='Shows device information')
 parser.add_argument('-l', '--live',  action='store_true',help='Measures live heart rate')
@@ -26,7 +62,15 @@ else:
     band.authenticate()
 
 def buttonCallback():
-    print("Hey")
+    print("Button pressed")
+    global mqttServer, mqttPort, siteId
+    publish.single('hermes/hotword/default/detected', payload=json.dumps({
+        'siteId': siteId,
+        'modelId': "hey_snips",
+        'modelVersion': "hey_snips_3.1_2018-04-13T15:27:35_model_0019",
+        'modelType': "universal",
+        'currentSensitivity': 0.5
+    }), hostname=mqttServer, port=mqttPort)
 
 if args.standard:
     print('### Standard Mode ###')
