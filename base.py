@@ -23,7 +23,7 @@ class AuthenticationDelegate(DefaultDelegate):
         # print('Developer: do what you want with the data.')
         # print(' '.join('{:02x}'.format(x) for x in bytearray(data)))
 
-        if hnd == 0x50:
+        if hnd == 0x50 and data[0] == b'\x04':
             self.device.queue.put((QUEUE_TYPES.BUTTON, data))
         elif hnd == self.device._char_auth.getHandle():
             if data[:3] == b'\x10\x01\x01':
