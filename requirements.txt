@@ -2,4 +2,3 @@ bluepy
 pycrypto
 pytoml
 paho-mqtt
-json
