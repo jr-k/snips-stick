@@ -93,6 +93,7 @@ if args.live:
     band.start_raw_data_realtime(
             heart_measure_callback=hearMesureCallback,
             heart_raw_callback=heartRawCallback,
-            accel_raw_callback=accelRawCallback)
+            accel_raw_callback=accelRawCallback,
+            button_callback=buttonCallback)
 
 band.disconnect()
