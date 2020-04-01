@@ -281,13 +281,13 @@ class MiBand2(Peripheral):
             try:
                 res = self.queue.get(False)
                 _type = res[0]
-                if self.heart_measure_callback and _type == QUEUE_TYPES.HEART:
+                if self.heart_measure_callback and _type == QUEUE_TYPES.HEART and self.heart_measure_callback:
                     self.heart_measure_callback(struct.unpack('bb', res[1])[1])
-                elif self.heart_raw_callback and _type == QUEUE_TYPES.RAW_HEART:
+                elif self.heart_raw_callback and _type == QUEUE_TYPES.RAW_HEART and self.heart_raw_callback:
                     self.heart_raw_callback(self._parse_raw_heart(res[1]))
-                elif self.accel_raw_callback and _type == QUEUE_TYPES.RAW_ACCEL:
+                elif self.accel_raw_callback and _type == QUEUE_TYPES.RAW_ACCEL and self.accel_raw_callback:
                     self.accel_raw_callback(self._parse_raw_accel(res[1]))
-                elif self.button_callback and _type == QUEUE_TYPES.BUTTON:
+                elif self.button_callback and _type == QUEUE_TYPES.BUTTON and self.button_callback:
                     self.button_callback()
             except Empty:
                 break
@@ -441,7 +441,7 @@ class MiBand2(Peripheral):
                 char_ctrl.write(b'\x16', True)
                 t = time.time()
 
-    def start_raw_data_realtime(self, heart_measure_callback=None, heart_raw_callback=None, accel_raw_callback=None):
+    def start_raw_data_realtime(self, heart_measure_callback=None, heart_raw_callback=None, accel_raw_callback=None, button_callback=None):
         char_m = self.svc_heart.getCharacteristics(UUIDS.CHARACTERISTIC_HEART_RATE_MEASURE)[0]
         char_d = char_m.getDescriptors(forUUID=UUIDS.NOTIFICATION_DESCRIPTOR)[0]
         char_ctrl = self.svc_heart.getCharacteristics(UUIDS.CHARACTERISTIC_HEART_RATE_CONTROL)[0]
@@ -452,6 +452,8 @@ class MiBand2(Peripheral):
             self.heart_raw_callback = heart_raw_callback
         if accel_raw_callback:
             self.accel_raw_callback = accel_raw_callback
+        if button_callback:
+            self.button_callback = button_callback
 
         char_sensor = self.svc_1.getCharacteristics(UUIDS.CHARACTERISTIC_SENSOR)[0]
         # char_sens_d = char_sensor1.getDescriptors(forUUID=UUIDS.NOTIFICATION_DESCRIPTOR)[0]
