@@ -142,6 +142,7 @@ class MiBand2(Peripheral):
         self.heart_measure_callback = None
         self.heart_raw_callback = None
         self.accel_raw_callback = None
+        self.button_callback = None
 
         self.svc_1 = self.getServiceByUUID(UUIDS.SERVICE_MIBAND1)
         self.svc_2 = self.getServiceByUUID(UUIDS.SERVICE_MIBAND2)
@@ -281,13 +282,13 @@ class MiBand2(Peripheral):
             try:
                 res = self.queue.get(False)
                 _type = res[0]
-                if self.heart_measure_callback and _type == QUEUE_TYPES.HEART and self.heart_measure_callback:
+                if self.heart_measure_callback and _type == QUEUE_TYPES.HEART:
                     self.heart_measure_callback(struct.unpack('bb', res[1])[1])
-                elif self.heart_raw_callback and _type == QUEUE_TYPES.RAW_HEART and self.heart_raw_callback:
+                elif self.heart_raw_callback and _type == QUEUE_TYPES.RAW_HEART:
                     self.heart_raw_callback(self._parse_raw_heart(res[1]))
-                elif self.accel_raw_callback and _type == QUEUE_TYPES.RAW_ACCEL and self.accel_raw_callback:
+                elif self.accel_raw_callback and _type == QUEUE_TYPES.RAW_ACCEL:
                     self.accel_raw_callback(self._parse_raw_accel(res[1]))
-                elif self.button_callback and _type == QUEUE_TYPES.BUTTON and self.button_callback:
+                elif self.button_callback and _type == QUEUE_TYPES.BUTTON:
                     self.button_callback()
             except Empty:
                 break
@@ -517,6 +518,7 @@ class MiBand2(Peripheral):
         self.heart_measure_callback = None
         self.heart_raw_callback = None
         self.accel_raw_callback = None
+        self.button_callback = None
 
     def start_get_previews_data(self, start_timestamp):
         self._auth_previews_data_notif(True)
