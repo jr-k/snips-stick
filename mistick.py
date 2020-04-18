@@ -14,7 +14,8 @@ SNIPS_CONFIG_PATH = '/etc/snips.toml'
 siteId = 'default'
 mqttServer = '127.0.0.1'
 mqttPort = 1883
-
+mqttUsername = ""
+mqttPassword = ""
 
 def loadConfigs():
     global mqttServer, mqttPort, siteId, hotwordId
@@ -29,6 +30,13 @@ def loadConfigs():
                 elif '@' in configs['snips-common']['mqtt']:
                     mqttServer = configs['snips-common']['mqtt'].split('@')[0]
                     mqttPort = int(configs['snips-common']['mqtt'].split('@')[1])
+                    
+            if 'mqtt_username' in configs['snips-common']:
+                mqttUsername = configs['snips-common']['mqtt_username']
+
+            if 'mqtt_password' in configs['snips-common']:
+                mqttPassword = configs['snips-common']['mqtt_password']
+                
             if 'bind' in configs['snips-audio-server']:
                 if ':' in configs['snips-audio-server']['bind']:
                     siteId = configs['snips-audio-server']['bind'].split(':')[0]
@@ -70,7 +78,7 @@ def buttonCallback():
         'modelVersion': "hey_snips_3.1_2018-04-13T15:27:35_model_0019",
         'modelType': "universal",
         'currentSensitivity': 0.5
-    }), hostname=mqttServer, port=mqttPort)
+    }), hostname=mqttServer, port=mqttPort, username=mqttUsername, password=mqttPassword)
 
 if args.standard:
     print('### Standard Mode ###')
