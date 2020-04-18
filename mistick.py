@@ -78,7 +78,7 @@ def buttonCallback():
         'modelVersion': "hey_snips_3.1_2018-04-13T15:27:35_model_0019",
         'modelType': "universal",
         'currentSensitivity': 0.5
-    }), hostname=mqttServer, port=mqttPort, username=mqttUsername, password=mqttPassword)
+    }), hostname=mqttServer, port=mqttPort, auth={"username":mqttUsername, "password": mqttPassword})
 
 if args.standard:
     print('### Standard Mode ###')
