@@ -18,7 +18,7 @@ mqttUsername = ""
 mqttPassword = ""
 
 def loadConfigs():
-    global mqttServer, mqttPort, mqttUsername, mqttPasword, siteId, hotwordId
+    global mqttServer, mqttPort, mqttUsername, mqttPassword, siteId, hotwordId
 
     if os.path.isfile(SNIPS_CONFIG_PATH):
         with open(SNIPS_CONFIG_PATH) as confFile:
